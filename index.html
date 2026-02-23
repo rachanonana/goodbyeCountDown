@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FRIDAY 17:30 COUNTDOWN</title>
+<title>Farewell Countdown</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
+
 body{
   font-family:'Orbitron',sans-serif;
   height:100vh;
@@ -20,7 +21,7 @@ body{
   color:white;
 }
 
-/* Background animated gradient */
+/* animated glow bg */
 body::before{
   content:"";
   position:absolute;
@@ -39,48 +40,21 @@ body::before{
 .container{
   text-align:center;
   z-index:2;
+  max-width:90%;
 }
 
 h1{
-  font-size:3rem;
-  letter-spacing:3px;
-  text-shadow:0 0 20px #00ffff;
+  font-size:2.5rem;
   margin-bottom:30px;
+  text-shadow:0 0 20px #00ffff;
 }
 
+/* TIMER */
 .timer{
   display:flex;
   gap:20px;
   justify-content:center;
   flex-wrap:wrap;
-}
-
-.box{
-  background:rgba(0,0,0,.5);
-  padding:25px;
-  border-radius:20px;
-  min-width:120px;
-  box-shadow:0 0 20px #00ffff, inset 0 0 15px #00ffff;
-  transition:.3s;
-}
-
-.box:hover{
-  transform:scale(1.1);
-  box-shadow:0 0 40px #ff00ff, inset 0 0 20px #ff00ff;
-}
-
-.number{
-  font-size:2.5rem;
-  font-weight:900;
-}
-
-.label{
-  font-size:.8rem;
-  opacity:.8;
-}
-
-/* Pulse effect */
-.pulse{
   animation:pulse 1s infinite alternate;
 }
 
@@ -89,20 +63,39 @@ h1{
   to{transform:scale(1.05)}
 }
 
-/* Celebration text */
-#celebrate{
-  font-size:4rem;
-  display:none;
-  animation:boom 1s ease forwards;
-  text-shadow:0 0 30px #ff0;
+.box{
+  background:rgba(0,0,0,.5);
+  padding:20px;
+  border-radius:20px;
+  min-width:110px;
+  box-shadow:0 0 20px #00ffff, inset 0 0 15px #00ffff;
 }
 
-@keyframes boom{
-  from{transform:scale(.5);opacity:0}
-  to{transform:scale(1.2);opacity:1}
+.number{
+  font-size:2rem;
+  font-weight:900;
 }
 
-/* Confetti */
+.label{
+  font-size:.8rem;
+  opacity:.8;
+}
+
+/* Farewell messages */
+.celebrate{
+  font-size:1.6rem;
+  opacity:0;
+  transform:translateY(30px);
+  margin:12px 0;
+  transition:all .6s ease;
+}
+
+.celebrate.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* confetti canvas */
 canvas{
   position:absolute;
   top:0;
@@ -111,13 +104,16 @@ canvas{
 }
 </style>
 </head>
+
 <body>
 
 <canvas id="confetti"></canvas>
 
 <div class="container">
-  <h1>😭 GOODBYE P'AIR 😭</h1>
-  <div class="timer pulse" id="timer">
+
+  <h1>😭 Goodbye P’Air 😭</h1>
+
+  <div class="timer" id="timer">
     <div class="box">
       <div class="number" id="days">0</div>
       <div class="label">DAYS</div>
@@ -136,18 +132,36 @@ canvas{
     </div>
   </div>
 
-  <div id="celebrate">🎉 IT'S FRIDAY!!! 🎉</div>
+  <!-- Farewell Messages -->
+  <div class="celebrate">ลาก่อน พี่แอร์ 😭😭😭😭😭💔💔</div>
+  <div class="celebrate">さようなら ピーエア 😭😭😭😭😭💧💧</div>
+  <div class="celebrate">안녕히 가세요 피에어 😭😭😭😭😭😭</div>
+  <div class="celebrate">再见 皮艾尔 😭😭😭😭😭💦</div>
+  <div class="celebrate">Au revoir P’Air 😭😭😭😭😭💔</div>
+  <div class="celebrate">Adiós P’Air 😭😭😭😭😭😭</div>
+  <div class="celebrate">Auf Wiedersehen P’Air 😭😭😭😭😭💧</div>
+  <div class="celebrate">Adeus P’Air 😭😭😭😭😭😭</div>
+  <div class="celebrate">До свидания Пи-Эйр 😭😭😭😭😭💦</div>
+  <div class="celebrate">وداعًا بي إير 😭😭😭😭😭💔</div>
+
 </div>
 
 <script>
+
+/* ===== COUNTDOWN ===== */
+
 function getNextFriday(){
   const now=new Date();
   const target=new Date();
   target.setHours(17,30,0,0);
+
   const day=now.getDay();
   const diff=(5-day+7)%7;
   target.setDate(now.getDate()+diff);
-  if(diff===0 && now>target) target.setDate(target.getDate()+7);
+
+  if(diff===0 && now>target){
+    target.setDate(target.getDate()+7);
+  }
   return target;
 }
 
@@ -155,8 +169,17 @@ const daysEl=document.getElementById("days");
 const hoursEl=document.getElementById("hours");
 const minutesEl=document.getElementById("minutes");
 const secondsEl=document.getElementById("seconds");
-const celebrate=document.getElementById("celebrate");
 const timer=document.getElementById("timer");
+
+function showFarewell(){
+  const messages=document.querySelectorAll(".celebrate");
+
+  messages.forEach((el,index)=>{
+    setTimeout(()=>{
+      el.classList.add("show");
+    }, index*500); // 0.5 วิ ต่อบรรทัด
+  });
+}
 
 function update(){
   const now=new Date();
@@ -165,7 +188,7 @@ function update(){
 
   if(diff<=0){
     timer.style.display="none";
-    celebrate.style.display="block";
+    showFarewell();
     startConfetti();
     return;
   }
@@ -184,7 +207,8 @@ function update(){
 setInterval(update,1000);
 update();
 
-/* Simple Confetti */
+/* ===== CONFETTI ===== */
+
 function startConfetti(){
   const canvas=document.getElementById("confetti");
   const ctx=canvas.getContext("2d");
@@ -209,8 +233,10 @@ function startConfetti(){
     });
     requestAnimationFrame(draw);
   }
+
   draw();
 }
+
 </script>
 
 </body>
