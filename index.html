@@ -353,6 +353,15 @@
           </div>
 
           <div>
+            <label for="mapResultFilter">Map Result filter</label>
+            <select id="mapResultFilter">
+              <option value="ALL">Show all</option>
+              <option value="INCLUDED">INCLUDED only</option>
+              <option value="DROPPED">DROPPED only</option>
+            </select>
+          </div>
+
+          <div>
             <label for="chargeTypes">chargeType list (comma separated)</label>
             <input id="chargeTypes" type="text" placeholder="prepaid, postpaid" />
           </div>
@@ -410,6 +419,8 @@
       merge_charge_type_mismatch: "mergeMode=true but specialChargeType not in config chargeType",
       destination_filter_mismatch: "dropped by destinationServer filter"
     };
+
+    let latestRows = [];
 
     const byId = (id) => document.getElementById(id);
 
@@ -745,6 +756,19 @@
       });
     }
 
+    function getRowsByMapResultFilter(rows, mapResultFilter) {
+      if (mapResultFilter === "INCLUDED" || mapResultFilter === "DROPPED") {
+        return rows.filter((row) => row.mapResult === mapResultFilter);
+      }
+      return rows;
+    }
+
+    function renderWithCurrentFilter() {
+      const mapResultFilter = byId("mapResultFilter").value;
+      const filteredRows = getRowsByMapResultFilter(latestRows, mapResultFilter);
+      render(filteredRows);
+    }
+
     function parseChargeTypes(text) {
       return String(text || "")
         .split(",")
@@ -785,8 +809,8 @@
       };
 
       try {
-        const rows = analyze(parsed.value, options);
-        render(rows);
+        latestRows = analyze(parsed.value, options);
+        renderWithCurrentFilter();
       } catch (error) {
         showError("Analyze error: " + (error && error.message ? error.message : String(error)));
       }
@@ -799,8 +823,14 @@
       byId("chargeTypes").value = "";
       byId("destinationServer").value = "";
       byId("mergeMode").value = "false";
+      byId("mapResultFilter").value = "ALL";
+      latestRows = [];
       showError("");
       render([]);
+    });
+
+    byId("mapResultFilter").addEventListener("change", () => {
+      renderWithCurrentFilter();
     });
 
     byId("fileInput").addEventListener("change", async (event) => {
@@ -819,7 +849,7 @@
       }
     });
 
-    render([]);
+    renderWithCurrentFilter();
   </script>
 </body>
 </html>
